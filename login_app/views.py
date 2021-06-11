@@ -5,6 +5,8 @@ import bcrypt
 
 
 def index(request):
+    if 'logged_in' in request.session:
+        request.session.clear()
     return render(request, 'index.html')
 
 def user_register(request):
@@ -27,8 +29,7 @@ def user_register(request):
         birthday = request.POST['birthday'], 
         password = pw_hash
     )
-    # messages.info(request, "You have created an account! Please log in...")             # This is good to have if you didn't auto logged in the user after registaring
-    request.session['logged-in'] = "logged-in"
+    request.session['logged_in'] = "logged_in"
     request.session['user_id'] = user.id
     return redirect('/books')
 
@@ -41,15 +42,6 @@ def user_login(request):
         for key, value in errors.items():
             messages.error(request, value)
         return redirect('/')
-
-    # user = User.objects.filter(email=post_data['email'])                              # This all good programming, but below is a better way of doing it with TRY and EXCEPT.
-    # if not user:
-    #     errors['user'] = 'This user does NOT exist in the database!'
-    # else:
-    #     user = User.objects.get(email=post_data['email'])
-    #     if not bcrypt.checkpw(post_data['password'].encode(), user.password.encode()):
-    #         errors['password'] = 'WRONG Password!!!'
-
     try:
         user = User.objects.get(email = request.POST['email'])
         if not bcrypt.checkpw(request.POST['password'].encode(), user.password.encode()):
@@ -60,7 +52,7 @@ def user_login(request):
         return redirect('/')
     request.session['user_id'] = user.id
     request.session['first_name'] = user.first_name
-    request.session['logged-in'] = "logged-in"
+    request.session['logged_in'] = "logged_in"
     return redirect('/books')
 
 def clear_forms(request):

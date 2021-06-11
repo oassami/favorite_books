@@ -1,12 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Favorite Books</title>
+
+    <!-- Bootstrap TAGS from (getbootstrap.com/docs) -->
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <!-- Bootstrap TAGS -->
+
 </head>
+
 <body>
-    <p>This is working so far! User ID#: {{request.session.user_id}} User Name: {{request.session.first_name}}</p>
+    <div class="container mb-5">
+        <div class="d-flex bd-highlight border-bottom border-dark border-3">
+            <p class="p-2 flex-grow-1 bd-highlight fs-3 fw-bold">Welcome, {{request.session.first_name}}!</p>
+            <p class="p-3 flex-shrink-0 bd-highlight"><a href="/">Log Out</a></p>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h4 class="mt-2">Add Favorite Book</h4>
+                {% if messages %}
+                    {% for message in messages %}
+                        <p style="color: red;">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+                <form action="/books/add" method="POST">
+                    {% csrf_token %}
+                    <div class="row mb-2">
+                        <label class="col-3">Title</label>
+                        <div class="col-5">
+                            <input type="text" class="form-control" name="title" value="{{request.session.title}}">
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <label class="col-3">Description</label>
+                        <div class="col-5">
+                            <textarea class="form-control" rows="3" name="description">{{request.session.description}}</textarea>
+                        </div>
+                    </div>
+                    <div class="d-grid col-2">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                </form>
+                <a class="d-grid mt-3" href="/books/clear">Clear form</a>
+            </div>
+
+            <div class="col">
+                <h4 class="mt-2">All Books</h4>
+                {% if not books_info %}
+                    <p>No books add yet!</p>
+                {% else %}
+                    {% for val in books_info %}
+                        <ul class="list-unstyled mb-4">
+                            <li>{{val.0|safe}}</li>
+                            <li>(added by {{val.1}})</li>
+                            <li>{{val.2|safe}}</li>
+                        </ul>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
